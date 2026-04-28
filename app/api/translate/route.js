@@ -1,5 +1,9 @@
 import { buildPrompt } from "@/lib/ollama";
 import { callAIStream } from "@/lib/ai-provider";
+import { rateLimit } from "@/lib/rate-limit";
+
+const SERVER_CHAR_LIMIT = 3000;
+const checkRateLimit = rateLimit(10, 60_000); // 10 req / min per IP
 
 /**
  * POST /api/translate
@@ -7,6 +11,14 @@ import { callAIStream } from "@/lib/ai-provider";
  * Streams plain text – client is responsible for JSON parsing at end.
  */
 export async function POST(request) {
+  const rl = checkRateLimit(request);
+  if (!rl.ok) {
+    return new Response(
+      JSON.stringify({ error: "Too many requests. Please wait a moment and try again." }),
+      { status: 429, headers: { "Content-Type": "application/json", "Retry-After": String(Math.ceil((rl.resetAt - Date.now()) / 1000)) } }
+    );
+  }
+
   let body;
   try {
     body = await request.json();
@@ -24,6 +36,13 @@ export async function POST(request) {
       status: 400,
       headers: { "Content-Type": "application/json" },
     });
+  }
+
+  if (content.length > SERVER_CHAR_LIMIT) {
+    return new Response(
+      JSON.stringify({ error: `Content exceeds the ${SERVER_CHAR_LIMIT.toLocaleString()} character limit.` }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
   }
 
   if (!["vietnamese", "english", "japanese"].includes(sourceLang)) {

@@ -1,4 +1,5 @@
 import "./globals.css";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 export const metadata = {
   title: "W2AI Content Creator",
@@ -7,8 +8,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="vi" className="h-full antialiased">
-      <body className="min-h-full">{children}</body>
+    <html lang="en" className="h-full antialiased">
+      <body className="min-h-full">
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </body>
     </html>
   );
 }
