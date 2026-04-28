@@ -1,49 +1,49 @@
 # W2AI Content Creator
 
-Ứng dụng web hỗ trợ tạo nội dung bài viết đa ngôn ngữ (Việt – Anh – Nhật) và gợi ý SEO Tags tối ưu, được hỗ trợ bởi AI.
+A web application for creating multilingual article content (Vietnamese, English, Japanese) with optimized SEO tag suggestions, powered by AI.
 
 ---
 
-## Tính năng
+## Features
 
-- **Rich text editor** (TipTap) với toolbar: Bold, Italic, Heading, List, Blockquote
-- **Chọn ngôn ngữ nguồn**: Tiếng Việt / English / 日本語
-- **Tự động dịch** sang 3 ngôn ngữ còn lại bằng AI
-- **Gợi ý SEO Tags** theo từng ngôn ngữ tương ứng
-- **Copy nội dung** từng ngôn ngữ và từng nhóm tags với một cú nhấp
-- Hiển thị kết quả theo bố cục dọc, rõ ràng từng ngôn ngữ
+- **Rich text editor** (TipTap) with toolbar: Bold, Italic, Heading, List, Blockquote
+- **Source language selector**: Vietnamese / English / Japanese
+- **Automatic translation** to the remaining three languages using AI
+- **SEO tag suggestions** for each language
+- **Copy content** for each language and each tag group with one click
+- Displays results in a clear vertical layout by language
 
 ---
 
 ## Tech Stack
 
-| Thành phần | Công nghệ |
+| Component | Technology |
 |---|---|
 | Framework | Next.js 16 (App Router) |
 | UI | React 19 + Tailwind CSS 4 |
 | Editor | TipTap 3 (StarterKit + Placeholder) |
 | AI Backend | Ollama (local LLM server) |
-| Ngôn ngữ | JavaScript (JSX) |
+| Language | JavaScript (JSX) |
 
 ---
 
-## Cấu trúc thư mục
+## Project Structure
 
 ```
 .
 ├── app/
 │   ├── api/
 │   │   └── translate/
-│   │       └── route.js        # API route – proxy đến Ollama
+│   │       └── route.js        # API route – proxy to Ollama
 │   ├── favicon.ico
 │   ├── globals.css
 │   ├── layout.js
-│   └── page.js                 # Trang chính
+│   └── page.js                 # Main page
 ├── components/
-│   ├── CopyButton.jsx          # Nút copy to clipboard
-│   ├── ContentOutput.jsx       # Card hiển thị nội dung + tags từng ngôn ngữ
+│   ├── CopyButton.jsx          # Clipboard copy button
+│   ├── ContentOutput.jsx       # Display card for content + tags per language
 │   ├── Editor.jsx              # TipTap rich text editor
-│   └── LanguageSelector.jsx    # Dropdown chọn ngôn ngữ nguồn
+│   └── LanguageSelector.jsx    # Source language dropdown
 ├── lib/
 │   └── ollama.js               # Prompt builder + Ollama fetch helper
 ├── public/
@@ -53,20 +53,20 @@
 
 ---
 
-## Yêu cầu môi trường
+## Environment Requirements
 
 - **Node.js** >= 18.x
 - **npm** >= 9.x
-- **Ollama** đang chạy và có thể truy cập từ máy chủ (mặc định `192.168.8.148:11434`)
-- Model **gemma4:e2b** đã được pull vào Ollama
+- **Ollama** running and reachable from the server (default `192.168.8.148:11434`)
+- The **gemma4:e2b** model must be pulled into Ollama
 
-### Cài model Ollama
+### Pull the Ollama model
 
 ```bash
 ollama pull gemma4:e2b
 ```
 
-### Kiểm tra Ollama hoạt động
+### Check that Ollama is working
 
 ```bash
 curl http://192.168.8.148:11434/api/tags
@@ -74,75 +74,75 @@ curl http://192.168.8.148:11434/api/tags
 
 ---
 
-## Chạy ở môi trường Development
+## Run in Development
 
 ```bash
-# 1. Cài dependencies
+# 1. Install dependencies
 npm install
 
-# 2. Chạy dev server
+# 2. Start dev server
 npm run dev
 ```
 
-Mở trình duyệt tại [http://localhost:3000](http://localhost:3000).
+Open your browser at [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## Deploy lên Server (Production)
+## Deploy to Server (Production)
 
-### Cách 1: Chạy trực tiếp với Node.js
+### Option 1: Run directly with Node.js
 
 ```bash
-# Clone và cài dependencies
+# Clone and install dependencies
 git clone <repo-url> /var/www/w2ai
 cd /var/www/w2ai
 npm install --omit=dev
 
-# Build production
+# Build for production
 npm run build
 
-# Chạy ứng dụng (port 3000)
+# Start the app (port 3000)
 npm start
 
-# Hoặc đổi port
+# Or change the port
 PORT=8080 npm start
 ```
 
 ---
 
-### Cách 2: Dùng PM2 (khuyến nghị cho production)
+### Option 2: Use PM2 (recommended for production)
 
-PM2 giữ ứng dụng chạy nền và tự restart khi bị lỗi.
+PM2 keeps the app running in the background and restarts it automatically if it crashes.
 
 ```bash
-# Cài PM2 toàn cục
+# Install PM2 globally
 npm install -g pm2
 
 # Build
 npm run build
 
-# Khởi động với PM2
+# Start with PM2
 pm2 start npm --name "w2ai" -- start
 
-# Tự start khi server reboot
+# Enable auto-start on reboot
 pm2 save
 pm2 startup
 ```
 
-Các lệnh quản lý PM2:
+PM2 management commands:
 
 ```bash
-pm2 status          # Xem trạng thái
-pm2 logs w2ai       # Xem logs
+pm2 status          # View status
+pm2 logs w2ai       # View logs
 pm2 restart w2ai    # Restart
-pm2 stop w2ai       # Dừng
+pm2 stop w2ai       # Stop
 ```
 
 ---
 
-### Cách 3: Nginx reverse proxy (production với domain)
+### Option 3: Nginx reverse proxy (production with domain)
 
-#### Cấu hình Nginx (`/etc/nginx/sites-available/w2ai`)
+#### Nginx configuration (`/etc/nginx/sites-available/w2ai`)
 
 ```nginx
 server {
@@ -158,7 +158,7 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_cache_bypass $http_upgrade;
-        # Tăng timeout vì AI có thể mất thời gian xử lý
+        # Increase timeout because AI may take time to process
         proxy_read_timeout 180s;
         proxy_connect_timeout 180s;
         proxy_send_timeout 180s;
@@ -167,13 +167,13 @@ server {
 ```
 
 ```bash
-# Kích hoạt config
+# Enable config
 ln -s /etc/nginx/sites-available/w2ai /etc/nginx/sites-enabled/
 nginx -t
 systemctl reload nginx
 ```
 
-#### Thêm SSL với Certbot
+#### Add SSL with Certbot
 
 ```bash
 apt install certbot python3-certbot-nginx
@@ -182,9 +182,9 @@ certbot --nginx -d your-domain.com
 
 ---
 
-### Cách 4: Docker
+### Option 4: Docker
 
-Thêm vào `next.config.mjs` để bật standalone output:
+Add this to `next.config.mjs` to enable standalone output:
 
 ```js
 const nextConfig = {
@@ -213,35 +213,35 @@ CMD ["node", "server.js"]
 ```
 
 ```bash
-# Build và chạy
+# Build and run
 docker build -t w2ai .
 docker run -d -p 3000:3000 --name w2ai w2ai
 ```
 
 ---
 
-## Cấu hình Ollama
+## Ollama Configuration
 
-Địa chỉ và model Ollama được cấu hình trong `lib/ollama.js`:
+The Ollama address and model are configured in `lib/ollama.js`:
 
 ```js
 const OLLAMA_BASE = "http://192.168.8.148:11434";
 const MODEL = "gemma4:e2b";
 ```
 
-Chỉnh sửa file này nếu cần đổi địa chỉ IP hoặc model.
+Edit this file if you need to change the IP address or model.
 
-> **Lưu ý bảo mật**: Không expose Ollama API trực tiếp ra internet. Ứng dụng dùng Next.js API Route làm proxy phía server — client sẽ không trực tiếp biết địa chỉ Ollama.
+> **Security note**: Do not expose the Ollama API directly to the internet. The app uses a Next.js API route as a server-side proxy so the client does not directly see the Ollama endpoint.
 
-### Cho phép Ollama nhận kết nối từ mạng nội bộ
+### Allow Ollama to accept connections from the local network
 
-Mặc định Ollama chỉ lắng nghe `127.0.0.1`. Để cho phép kết nối từ IP khác:
+By default, Ollama listens only on `127.0.0.1`. To allow connections from other IPs:
 
 ```bash
-# Linux – đặt biến môi trường trước khi chạy ollama
+# Linux – set environment variable before running ollama
 OLLAMA_HOST=0.0.0.0 ollama serve
 
-# Hoặc cấu hình systemd service
+# Or configure the systemd service
 # /etc/systemd/system/ollama.service.d/override.conf
 [Service]
 Environment="OLLAMA_HOST=0.0.0.0"
@@ -249,12 +249,12 @@ Environment="OLLAMA_HOST=0.0.0.0"
 
 ---
 
-## Lưu ý khi deploy
+## Deployment Notes
 
-| Vấn đề | Giải pháp |
+| Issue | Solution |
 |---|---|
-| AI xử lý chậm (30–120s) | Tăng `proxy_read_timeout` trong Nginx lên ≥ 180s |
-| Ollama từ chối kết nối | Đặt `OLLAMA_HOST=0.0.0.0` khi khởi động Ollama |
-| Lỗi CORS từ Ollama | Không cần lo — request đi qua API Route server-side |
-| Port 3000 bị chặn firewall | Dùng Nginx proxy hoặc mở port qua `ufw allow 3000` |
-| Model không tìm thấy | Chạy `ollama pull gemma4:e2b` trên máy chủ Ollama |
+| AI processing is slow (30–120s) | Increase `proxy_read_timeout` in Nginx to ≥ 180s |
+| Ollama refuses connections | Set `OLLAMA_HOST=0.0.0.0` when starting Ollama |
+| CORS errors from Ollama | No action needed — requests go through the server-side API route |
+| Port 3000 blocked by firewall | Use Nginx proxy or open the port with `ufw allow 3000` |
+| Model not found | Run `ollama pull gemma4:e2b` on the Ollama server |
